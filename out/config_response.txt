@@ -1,0 +1,12 @@
+HTTP/1.0 200 OK
+Server: BaseHTTP/0.6 Python/3.12.3
+Date: Thu, 02 Oct 2025 17:48:14 GMT
+Content-type: application/json
+
+{
+  "PORT": "8080",
+  "RELEASE": "v1.0.0",
+  "HOST": "localhost",
+  "DEBUG": "true",
+  "LOG_LEVEL": "INFO"
+}
