@@ -16,7 +16,7 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 # DELEGAR TODA LA LÓGICA A TU SCRIPT BASH
                 result = subprocess.run(
-                    ['./src/generar-config.sh'],
+                    ['bash', './src/generar-config.sh'],
                     capture_output=True, #stdout y stderror
                     text=True,
                     timeout=5,
