@@ -1,9 +1,9 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import os
-import json
+import subprocess
 
 PORT = int(os.getenv("PORT", "8080"))
-WHITELIST = ["PORT", "RELEASE", "HOST", "DEBUG", "LOG_LEVEL"]
+
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/salud":
@@ -13,31 +13,34 @@ class Handler(BaseHTTPRequestHandler):
             self.wfile.write(b"OK")
         
         elif self.path == "/config":
-            # Validar variables requeridas
-            if os.getenv("PORT") is None:
+            try:
+                # DELEGAR TODA LA LÓGICA A TU SCRIPT BASH
+                result = subprocess.run(
+                    ['./src/generar-config.sh'],
+                    capture_output=True, #stdout y stderror
+                    text=True,
+                    timeout=5,
+                    env=os.environ  # Pasar todas las variables de entorno
+                )
+                
+                if result.returncode == 0:
+                    # Script Bash retorna la configuración directamente
+                    self.send_response(200)
+                    self.send_header("Content-type", "text/plain")
+                    self.end_headers()
+                    self.wfile.write(result.stdout.encode())
+                else:
+                    # Error manejado por Bash
+                    self.send_response(500)
+                    self.send_header("Content-type", "text/plain") 
+                    self.end_headers()
+                    self.wfile.write(result.stderr.encode())
+                    
+            except Exception as e:
                 self.send_response(500)
                 self.send_header("Content-type", "text/plain")
                 self.end_headers()
-                self.wfile.write("ERROR: Variable requerida PORT no definida".encode())
-                return
-
-            # Filtrar variables de la lista blanca
-            config = {key: os.getenv(key) for key in WHITELIST if os.getenv(key)}
-
-            # Determinar formato
-            formato = os.getenv("FORMATO_SALIDA", "json").lower()
-            if formato == "texto":
-                body = "\n".join(f"{k}={v}" for k, v in config.items())
-                self.send_response(200)
-                self.send_header("Content-type", "text/plain")
-                self.end_headers()
-                self.wfile.write(body.encode())
-            else:  # JSON por defecto
-                body = json.dumps(config, indent=2)
-                self.send_response(200)
-                self.send_header("Content-type", "application/json")
-                self.end_headers()
-                self.wfile.write(body.encode())
+                self.wfile.write(f"Error ejecutando configuración: {str(e)}".encode())
 
         else:
             self.send_response(404)
