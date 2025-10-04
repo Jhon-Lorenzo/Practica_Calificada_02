@@ -11,7 +11,16 @@ setup() {
 }
 
 teardown() {
-    kill $SERVER_PID 2>/dev/null || true
+    # Terminar procesos por nombre y puerto
+    pkill -f "python3 src/servicio.py" 2>/dev/null || true
+    pkill -f "src/iniciar-servicio.sh" 2>/dev/null || true
+    
+    # Esperar y forzar terminación si es necesario
+    sleep 1
+    pkill -9 -f "python3 src/servicio.py" 2>/dev/null || true
+    
+    # Liberar el puerto por si queda bloqueado
+    fuser -k "${PORT}/tcp" 2>/dev/null || true
 }
 
 @test "GET /salud retorna 200" {
