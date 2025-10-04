@@ -1,0 +1,16 @@
+[Unit]
+Description=Servicio Config Echo - Proyecto 5
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/%i/Practica_Calificada_02
+Environment=PORT=8080
+ExecStart=/usr/bin/python3 /home/%i/Practica_Calificada_02/src/servicio.py
+Restart=on-failure
+RestartSec=5s
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
