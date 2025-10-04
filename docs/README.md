@@ -24,3 +24,20 @@ El endpoint `/config` soporta dos formatos:
   "PORT": "8080",
   "RELEASE": "v1.0.0"
 }
+
+## Sprint 2 - Sistema Avanzado de Configuración
+
+### Nuevas Funcionalidades
+
+##### Validación Avanzada
+
+```bash
+# Validar configuración completa
+./src/generar-config.sh --validar
+
+# Validaciones implementadas:
+# - Formato de puerto (1024-65535)
+# - Versión semver (vX.Y.Z) 
+# - Niveles de log válidos
+# - Sanitización de seguridad
+```
